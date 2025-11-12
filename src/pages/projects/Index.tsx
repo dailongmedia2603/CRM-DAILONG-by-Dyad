@@ -70,7 +70,7 @@ import { ProjectCardMobile } from "@/components/projects/ProjectCardMobile";
 import { ProjectDetailsDialog } from "@/components/projects/ProjectDetailsDialog";
 import { useProjects } from "@/hooks/useProjects";
 import usePersistentState from "@/hooks/usePersistentState";
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 
 const ProjectsPage = () => {
   const { session } = useSession();

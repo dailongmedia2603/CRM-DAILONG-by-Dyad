@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Lead, Personnel } from "@/types";
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 
 const fetchLeads = async (userId: string, userRole: string): Promise<Lead[]> => {
   let query = supabase

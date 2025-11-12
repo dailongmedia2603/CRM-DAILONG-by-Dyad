@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Project, Client } from "@/types";
 import { startOfToday } from 'date-fns';
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 
 const fetchProjects = async (userId: string, userRole: string): Promise<Project[]> => {
   let query = supabase

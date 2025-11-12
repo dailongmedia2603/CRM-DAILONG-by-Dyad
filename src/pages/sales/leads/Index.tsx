@@ -86,7 +86,7 @@ import { Lead, Personnel } from "@/types";
 import { cn } from "@/lib/utils";
 import { format, startOfDay, isEqual, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LeadCard } from "@/components/sales/leads/LeadCard";
 import { useLeads } from "@/hooks/useLeads";

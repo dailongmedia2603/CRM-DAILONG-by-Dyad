@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSession } from '@/context/SessionContext';
+import { useSession } from '@/contexts/SessionContext';
 
 interface AbilityContextType {
   permissions: Set<string>;

@@ -21,7 +21,7 @@ import { showSuccess, showError } from "@/utils/toast";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, parseISO, isToday } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { TaskCard } from "@/components/task-management/TaskCard";
 import { useTasks } from "@/hooks/useTasks";

@@ -1,4 +1,4 @@
-import { useSession } from '@/context/SessionContext';
+import { useSession } from '@/contexts/SessionContext';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAbility } from '@/context/AbilityProvider';
 import { useEffect } from 'react';

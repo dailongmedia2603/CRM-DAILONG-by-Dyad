@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, FormEvent } from 'react';
-import { useSession } from '@/context/SessionContext';
+import { useSession } from '@/contexts/SessionContext';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,11 +43,6 @@ const LoginPage = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl flex rounded-2xl shadow-lg overflow-hidden my-8 bg-white">
         {/* Left Panel */}
-        <div className="w-1/2 bg-[#2e3192] p-12 flex justify-center items-center text-white hidden md:flex">
-          <img src="https://i.postimg.cc/t4BcyRxB/logo-vua-Seeding-white.png" alt="Logo" className="w-full max-w-xs" />
-        </div>
-
-        {/* Right Panel */}
         <div className="w-full md:w-1/2 p-12 flex flex-col justify-center">
           <h2 className="text-3xl font-bold mb-8 text-gray-800">ĐĂNG NHẬP</h2>
           <form onSubmit={handleLogin} className="space-y-6">

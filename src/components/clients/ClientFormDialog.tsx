@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Client } from "@/types";
 import { useEffect } from "react";
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 import usePersistentState from "@/hooks/usePersistentState";
 
 interface ClientFormDialogProps {

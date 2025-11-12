@@ -23,7 +23,7 @@ import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useSession } from '@/context/SessionContext';
+import { useSession } from '@/contexts/SessionContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { InternTaskCard } from '@/components/interns/InternTaskCard';
 import { useInternTasks } from '@/hooks/useInternTasks';

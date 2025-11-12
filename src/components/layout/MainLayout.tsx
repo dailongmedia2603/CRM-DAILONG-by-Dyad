@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { Can } from "@/components/auth/Can";
-import { useSession } from "@/context/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
 import { useAbility } from "@/context/AbilityProvider";
 import usePersistentState from "@/hooks/usePersistentState";
 
