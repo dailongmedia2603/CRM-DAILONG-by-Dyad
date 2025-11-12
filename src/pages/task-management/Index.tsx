@@ -21,13 +21,13 @@ import { showSuccess, showError } from "@/utils/toast";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, parseISO, isToday } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthProvider";
+import { useSession } from "@/context/SessionContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { TaskCard } from "@/components/task-management/TaskCard";
 import { useTasks } from "@/hooks/useTasks";
 
 const TasksManagementPage = () => {
-  const { session } = useAuth();
+  const { personnel: currentUserPersonnel } = useSession();
   const { tasks, personnel, isLoading, invalidateTasks } = useTasks();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -92,14 +92,11 @@ const TasksManagementPage = () => {
   };
 
   const currentUser = useMemo(() => {
-    if (session?.user && personnel.length > 0) {
-      const user = personnel.find(p => p.id === session.user.id);
-      if (user) {
-        return { id: user.id, name: user.name };
-      }
+    if (currentUserPersonnel) {
+      return { id: currentUserPersonnel.id, name: currentUserPersonnel.name };
     }
     return { id: '', name: '' };
-  }, [personnel, session]);
+  }, [currentUserPersonnel]);
 
   const filteredTasks = useMemo(() => {
     let filtered = tasks.filter(task => task.archived === showArchived);

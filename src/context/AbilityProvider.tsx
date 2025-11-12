@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './AuthProvider';
+import { useSession } from '@/context/SessionContext';
 
 interface AbilityContextType {
   permissions: Set<string>;
@@ -17,13 +17,13 @@ const AbilityContext = createContext<AbilityContextType>({
 export const useAbility = () => useContext(AbilityContext);
 
 export const AbilityProvider = ({ children }: { children: ReactNode }) => {
-  const { session, loading: authLoading } = useAuth();
+  const { personnel, loading: sessionLoading } = useSession();
   const [permissions, setPermissions] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPermissions = async () => {
-      if (!session?.user) {
+      if (!personnel) {
         setPermissions(new Set());
         setLoading(false);
         return;
@@ -31,21 +31,8 @@ export const AbilityProvider = ({ children }: { children: ReactNode }) => {
 
       setLoading(true);
 
-      const { data: personnelData, error: personnelError } = await supabase
-        .from('personnel')
-        .select('role, position_id')
-        .eq('id', session.user.id)
-        .single();
-
-      if (personnelError || !personnelData) {
-        console.error('Error fetching personnel data:', personnelError);
-        setPermissions(new Set());
-        setLoading(false);
-        return;
-      }
-
       // Special case for BOD and Manager roles - grant all permissions
-      if (personnelData.role === 'BOD' || personnelData.role === 'Quản lý') {
+      if (personnel.role === 'BOD' || personnel.role === 'Quản lý') {
         const { data: allPermissions, error: allPermissionsError } = await supabase
           .from('permissions')
           .select('name');
@@ -62,7 +49,7 @@ export const AbilityProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Existing logic for other roles based on position
-      if (!personnelData.position_id) {
+      if (!personnel.position_id) {
         setPermissions(new Set());
         setLoading(false);
         return;
@@ -71,7 +58,7 @@ export const AbilityProvider = ({ children }: { children: ReactNode }) => {
       const { data: positionPermsData, error: positionPermsError } = await supabase
         .from('position_permissions')
         .select('permission_id')
-        .eq('position_id', personnelData.position_id);
+        .eq('position_id', personnel.position_id);
 
       if (positionPermsError || !positionPermsData) {
         console.error('Error fetching position permissions:', positionPermsError);
@@ -104,10 +91,10 @@ export const AbilityProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     };
 
-    if (!authLoading) {
+    if (!sessionLoading) {
       fetchPermissions();
     }
-  }, [session, authLoading]);
+  }, [personnel, sessionLoading]);
 
   const can = (permission: string) => {
     return permissions.has(permission);

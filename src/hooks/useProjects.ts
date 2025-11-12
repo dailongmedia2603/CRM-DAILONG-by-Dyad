@@ -2,8 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Project, Client } from "@/types";
 import { startOfToday } from 'date-fns';
-import { useAuth } from "@/context/AuthProvider";
-import { useState, useEffect } from "react";
+import { useSession } from "@/context/SessionContext";
 
 const fetchProjects = async (userId: string, userRole: string): Promise<Project[]> => {
   let query = supabase
@@ -36,27 +35,12 @@ const fetchClientsForProjects = async (): Promise<Client[]> => {
 
 export const useProjects = () => {
   const queryClient = useQueryClient();
-  const { session } = useAuth();
-  const [userRole, setUserRole] = useState('');
-
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      if (session?.user) {
-        const { data } = await supabase
-          .from('personnel')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        setUserRole(data?.role || '');
-      }
-    };
-    fetchUserRole();
-  }, [session]);
+  const { personnel } = useSession();
 
   const { data: projects, isLoading: isLoadingProjects, error: projectsError } = useQuery<Project[]>({
-    queryKey: ['projects', session?.user?.id, userRole],
-    queryFn: () => fetchProjects(session!.user.id, userRole),
-    enabled: !!session?.user && !!userRole,
+    queryKey: ['projects', personnel?.id, personnel?.role],
+    queryFn: () => fetchProjects(personnel!.id, personnel!.role),
+    enabled: !!personnel,
   });
 
   const { data: clients, isLoading: isLoadingClients, error: clientsError } = useQuery<Client[]>({

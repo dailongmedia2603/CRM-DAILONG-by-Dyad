@@ -23,7 +23,7 @@ import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@/context/AuthProvider';
+import { useSession } from '@/context/SessionContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { InternTaskCard } from '@/components/interns/InternTaskCard';
 import { useInternTasks } from '@/hooks/useInternTasks';
@@ -51,7 +51,7 @@ const StatCard = ({ icon, title, value, subtitle, iconBgColor, onClick, isActive
 };
 
 const InternsPage = () => {
-  const { session } = useAuth();
+  const { session } = useSession();
   const { tasks, personnel, isLoading, invalidateTasks } = useInternTasks();
   const [searchParams, setSearchParams] = useSearchParams();
 

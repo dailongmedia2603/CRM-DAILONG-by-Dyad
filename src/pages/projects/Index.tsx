@@ -70,10 +70,10 @@ import { ProjectCardMobile } from "@/components/projects/ProjectCardMobile";
 import { ProjectDetailsDialog } from "@/components/projects/ProjectDetailsDialog";
 import { useProjects } from "@/hooks/useProjects";
 import usePersistentState from "@/hooks/usePersistentState";
-import { useAuth } from "@/context/AuthProvider";
+import { useSession } from "@/context/SessionContext";
 
 const ProjectsPage = () => {
-  const { session } = useAuth();
+  const { session } = useSession();
   const { projects: projectsFromHook, clients, isLoading, invalidateProjects } = useProjects();
   const [projects, setProjects] = useState<Project[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -363,7 +363,7 @@ const ProjectsPage = () => {
             <Select value={statusFilter} onValueChange={(value) => updateSearchParam('status', value)}><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Tiến độ" /></SelectTrigger><SelectContent><SelectItem value="all">Tất cả tiến độ</SelectItem><SelectItem value="planning">Pending</SelectItem><SelectItem value="in-progress">Đang chạy</SelectItem><SelectItem value="completed">Hoàn thành</SelectItem><SelectItem value="overdue">Quá hạn</SelectItem></SelectContent></Select>
             <Button variant="outline" onClick={() => updateSearchParam('archived', !showArchived)}>{showArchived ? <List className="mr-2 h-4 w-4" /> : <Archive className="mr-2 h-4 w-4" />}{showArchived ? "Dự án hoạt động" : "Dự án lưu trữ"}</Button>
           </div>
-          <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
             {selectedProjects.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild><Button variant="destructive">Thao tác hàng loạt ({selectedProjects.length})</Button></DropdownMenuTrigger>

@@ -18,8 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Client } from "@/types";
 import { useEffect } from "react";
-import { useAuth } from "@/context/AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/context/SessionContext";
 import usePersistentState from "@/hooks/usePersistentState";
 
 interface ClientFormDialogProps {
@@ -36,46 +35,28 @@ export const ClientFormDialog = ({
   client,
 }: ClientFormDialogProps) => {
   const [formData, setFormData] = usePersistentState<Partial<Client>>('clientFormData', {});
-  const { session } = useAuth();
+  const { personnel } = useSession();
 
   useEffect(() => {
-    const fetchCurrentUserName = async () => {
-      if (session?.user) {
-        const { data, error } = await supabase
-          .from('personnel')
-          .select('name')
-          .eq('id', session.user.id)
-          .single();
-        if (!error && data) {
-          return data.name;
-        }
-      }
-      return "Admin"; // Fallback
-    };
-
     if (open) {
-      // Check if there's already data in localStorage from the hook
       const hasPersistedData = Object.keys(formData).length > 0;
 
       if (!hasPersistedData) {
         if (client) {
           setFormData(client);
         } else {
-          fetchCurrentUserName().then(name => {
-            const initialData: Partial<Client> = { 
-              status: "active",
-              creation_date: new Date().toISOString(),
-              created_by: name
-            };
-            setFormData(initialData);
-          });
+          const initialData: Partial<Client> = { 
+            status: "active",
+            creation_date: new Date().toISOString(),
+            created_by: personnel?.name || "Admin"
+          };
+          setFormData(initialData);
         }
       }
     } else {
-      // Clear form data when dialog is closed
       setFormData({});
     }
-  }, [client, open, session]);
+  }, [client, open, personnel]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

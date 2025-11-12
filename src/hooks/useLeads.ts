@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Lead, Personnel } from "@/types";
-import { useAuth } from "@/context/AuthProvider";
-import { useEffect, useState } from "react";
+import { useSession } from "@/context/SessionContext";
 
 const fetchLeads = async (userId: string, userRole: string): Promise<Lead[]> => {
   let query = supabase
@@ -27,27 +26,12 @@ const fetchPersonnel = async (): Promise<Personnel[]> => {
 
 export const useLeads = () => {
   const queryClient = useQueryClient();
-  const { session } = useAuth();
-  const [userRole, setUserRole] = useState('');
-
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      if (session?.user) {
-        const { data } = await supabase
-          .from('personnel')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        setUserRole(data?.role || '');
-      }
-    };
-    fetchUserRole();
-  }, [session]);
+  const { personnel: currentUserPersonnel } = useSession();
 
   const { data: leads, isLoading: isLoadingLeads, error: leadsError } = useQuery<Lead[]>({
-    queryKey: ['leads', session?.user?.id, userRole],
-    queryFn: () => fetchLeads(session!.user.id, userRole),
-    enabled: !!session?.user && !!userRole,
+    queryKey: ['leads', currentUserPersonnel?.id, currentUserPersonnel?.role],
+    queryFn: () => fetchLeads(currentUserPersonnel!.id, currentUserPersonnel!.role),
+    enabled: !!currentUserPersonnel,
   });
 
   const { data: personnel, isLoading: isLoadingPersonnel, error: personnelError } = useQuery<Personnel[]>({

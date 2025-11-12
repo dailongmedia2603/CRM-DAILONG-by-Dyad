@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, FormEvent } from 'react';
-import { useAuth } from '@/context/AuthProvider';
+import { useSession } from '@/context/SessionContext';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 const LoginPage = () => {
-  const { session } = useAuth();
+  const { session } = useSession();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

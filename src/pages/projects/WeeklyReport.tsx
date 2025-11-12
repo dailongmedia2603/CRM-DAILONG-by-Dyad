@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Project, Personnel } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthProvider";
+import { useSession } from "@/context/SessionContext";
 import { showSuccess, showError } from "@/utils/toast";
 import { ProjectDetailsDialog } from "@/components/projects/ProjectDetailsDialog";
 import { WeeklyReportFormDialog } from "@/components/projects/WeeklyReportFormDialog";
@@ -21,7 +21,7 @@ import { WeeklyReportHistoryDialog } from "@/components/projects/WeeklyReportHis
 import { FileText, History, Search } from "lucide-react";
 
 const WeeklyReportPage = () => {
-  const { session } = useAuth();
+  const { personnel: currentUserPersonnel } = useSession();
   const [projects, setProjects] = useState<Project[]>([]);
   const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,11 +35,8 @@ const WeeklyReportPage = () => {
   });
 
   const currentUser = useMemo(() => {
-    if (session?.user && personnel.length > 0) {
-      return personnel.find(p => p.id === session.user.id);
-    }
-    return null;
-  }, [personnel, session]);
+    return currentUserPersonnel;
+  }, [currentUserPersonnel]);
 
   const filteredProjects = useMemo(() => {
     if (!searchTerm) {

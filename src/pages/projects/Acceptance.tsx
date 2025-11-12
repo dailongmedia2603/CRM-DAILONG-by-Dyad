@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Project, Personnel, AwaitingPaymentProject } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthProvider";
+import { useSession } from "@/context/SessionContext";
 import { showSuccess, showError } from "@/utils/toast";
 import { ProjectDetailsDialog } from "@/components/projects/ProjectDetailsDialog";
 import { AcceptanceHistoryDialog } from "@/components/projects/AcceptanceHistoryDialog";
@@ -220,10 +220,9 @@ const NewProjectsAwaitingPaymentTable = ({ projects, onEdit, onDelete, onStatusC
   };
 
 const AcceptancePage = () => {
-  const { session } = useAuth();
+  const { personnel: currentUser } = useSession();
   const [projects, setProjects] = useState<Project[]>([]);
   const [newAwaitingPaymentProjects, setNewAwaitingPaymentProjects] = useState<AwaitingPaymentProject[]>([]);
-  const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   
@@ -241,13 +240,6 @@ const AcceptancePage = () => {
 
   const row1Keys = ['Cần làm BBNT', 'Chờ xác nhận file', 'Đang in bản cứng', 'Đã gởi bản cứng'];
   const row2Keys = ['Chờ thanh toán', 'Đã nhận tiền'];
-
-  const currentUser = useMemo(() => {
-    if (session?.user && personnel.length > 0) {
-      return personnel.find(p => p.id === session.user.id);
-    }
-    return null;
-  }, [personnel, session]);
 
   const filteredAcceptanceProjects = useMemo(() => {
     return projects.filter(project => {
@@ -295,7 +287,7 @@ const AcceptancePage = () => {
 
   const fetchData = async () => {
     setIsLoading(true);
-    const [acceptanceProjectsRes, newProjectsRes, personnelRes] = await Promise.all([
+    const [acceptanceProjectsRes, newProjectsRes] = await Promise.all([
       supabase
         .from('projects')
         .select('*, acceptance_history(*)')
@@ -305,7 +297,6 @@ const AcceptancePage = () => {
         .from('awaiting_payment_projects')
         .select('*')
         .order('created_at', { ascending: false }),
-      supabase.from('personnel').select('*')
     ]);
 
     if (acceptanceProjectsRes.error) showError("Lỗi khi tải dự án nghiệm thu.");
@@ -316,9 +307,6 @@ const AcceptancePage = () => {
     } else {
       setNewAwaitingPaymentProjects(newProjectsRes.data as AwaitingPaymentProject[]);
     }
-
-    if (personnelRes.error) showError("Lỗi khi tải nhân sự.");
-    else setPersonnel(personnelRes.data);
 
     setIsLoading(false);
   };

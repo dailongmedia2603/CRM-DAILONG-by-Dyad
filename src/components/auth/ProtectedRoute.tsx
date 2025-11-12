@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthProvider';
+import { useSession } from '@/context/SessionContext';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAbility } from '@/context/AbilityProvider';
 import { useEffect } from 'react';
@@ -17,13 +17,13 @@ const permissionRouteMap = [
 ];
 
 const ProtectedRoute = () => {
-  const { session, loading: authLoading } = useAuth();
+  const { session, loading: sessionLoading } = useSession();
   const { can, loading: abilityLoading } = useAbility();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authLoading || abilityLoading) {
+    if (sessionLoading || abilityLoading) {
       return; // Wait until everything is loaded
     }
 
@@ -43,9 +43,9 @@ const ProtectedRoute = () => {
         }
       }
     }
-  }, [authLoading, abilityLoading, session, location.pathname, can, navigate]);
+  }, [sessionLoading, abilityLoading, session, location.pathname, can, navigate]);
 
-  if (authLoading || abilityLoading) {
+  if (sessionLoading || abilityLoading) {
     return <div className="flex h-screen items-center justify-center">Loading...</div>;
   }
 

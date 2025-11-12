@@ -86,13 +86,13 @@ import { Lead, Personnel } from "@/types";
 import { cn } from "@/lib/utils";
 import { format, startOfDay, isEqual, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthProvider";
+import { useSession } from "@/context/SessionContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LeadCard } from "@/components/sales/leads/LeadCard";
 import { useLeads } from "@/hooks/useLeads";
 
 const LeadsPage = () => {
-  const { session } = useAuth();
+  const { personnel: currentUserPersonnel } = useSession();
   const { leads, personnel, isLoading, invalidateLeads } = useLeads();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -148,19 +148,16 @@ const LeadsPage = () => {
   };
 
   const currentUserInfo = useMemo(() => {
-    if (session?.user && personnel.length > 0) {
-        const user = personnel.find(p => p.id === session.user.id);
-        if (user) {
-            return { 
-              id: user.id, 
-              name: user.name, 
-              isSale: user.position.toLowerCase() === 'sale',
-              role: user.role 
-            };
-        }
+    if (currentUserPersonnel) {
+      return { 
+        id: currentUserPersonnel.id, 
+        name: currentUserPersonnel.name, 
+        isSale: currentUserPersonnel.position.toLowerCase() === 'sale',
+        role: currentUserPersonnel.role 
+      };
     }
     return { id: '', name: '', isSale: false, role: null };
-  }, [personnel, session]);
+  }, [currentUserPersonnel]);
 
   const assignableUsers = useMemo(() => {
     const sales = personnel.filter(p => p.position.toLowerCase() === 'sale');

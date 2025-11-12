@@ -31,9 +31,8 @@ import {
   ChevronsLeft
 } from "lucide-react";
 import React from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Can } from "@/components/auth/Can";
-import { useAuth } from "@/context/AuthProvider";
+import { useSession } from "@/context/SessionContext";
 import { useAbility } from "@/context/AbilityProvider";
 import usePersistentState from "@/hooks/usePersistentState";
 
@@ -95,19 +94,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = usePersistentState('sidebarCollapsed', false);
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const { session } = useAuth();
+  const { session, signOut } = useSession();
   const { can } = useAbility();
 
   const canViewReports = can('reports.sales.view') || can('reports.projects.view') || can('reports.interns.view') || can('reports.clients.view');
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login', { replace: true });
   };
 
   return (
@@ -195,7 +188,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                     Preferences
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
+                  <DropdownMenuItem className="text-red-600" onClick={signOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>
