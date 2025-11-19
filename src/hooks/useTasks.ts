@@ -9,8 +9,8 @@ const fetchTasks = async (userId: string, userRole: string): Promise<Task[]> => 
     .select("*, assigner:personnel!tasks_assigner_id_fkey(*), assignee:personnel!tasks_assignee_id_fkey(*), feedback(*)")
     .order('created_at', { ascending: false });
 
-  // If user is not a manager or BOD, filter by assignee_id
-  if (userRole === 'Nhân viên' || userRole === 'Thực tập') {
+  // If user is not BOD, filter by assignee_id
+  if (userRole !== 'BOD') {
     query = query.eq('assignee_id', userId);
   }
 
