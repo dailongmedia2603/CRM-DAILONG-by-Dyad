@@ -32,7 +32,7 @@ const TasksManagementPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const dateQuery = searchParams.get('date');
-  const dateFilter = dateQuery ? parseISO(dateQuery) : new Date();
+  const dateFilter = dateQuery ? parseISO(dateQuery) : null;
   const searchTerm = searchParams.get('search') || '';
   const statusFilter = searchParams.get('status') || 'all';
   const priorityFilter = searchParams.get('priority') || 'all';
@@ -60,7 +60,7 @@ const TasksManagementPage = () => {
   const updateSearchParam = (key: string, value: string | boolean | number | Date | null) => {
     setSearchParams(prev => {
       const defaults: Record<string, any> = {
-        date: null, // Special handling for today
+        date: null,
         search: '',
         status: 'all',
         priority: 'all',
@@ -71,9 +71,7 @@ const TasksManagementPage = () => {
       };
 
       if (key === 'date') {
-        if (value instanceof Date && isToday(value)) {
-          prev.delete('date');
-        } else if (value) {
+        if (value) {
           prev.set('date', format(value as Date, 'yyyy-MM-dd'));
         } else {
           prev.delete('date');
