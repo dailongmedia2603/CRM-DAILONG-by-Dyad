@@ -3,18 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Task, Personnel } from "@/types";
 import { useSession } from "@/contexts/SessionContext";
 
-const fetchTasks = async (userId: string, userRole: string): Promise<Task[]> => {
-  let query = supabase
+const fetchTasks = async (): Promise<Task[]> => {
+  const { data, error } = await supabase
     .from("tasks")
     .select("*, assigner:personnel!tasks_assigner_id_fkey(*), assignee:personnel!tasks_assignee_id_fkey(*), feedback(*)")
     .order('created_at', { ascending: false });
 
-  // If user is not BOD, filter by assignee_id
-  if (userRole !== 'BOD') {
-    query = query.eq('assignee_id', userId);
-  }
-
-  const { data, error } = await query;
   if (error) throw new Error(error.message);
   
   const tasksWithFeedback = data.map(task => ({
@@ -35,8 +29,8 @@ export const useTasks = () => {
   const { personnel: currentUserPersonnel } = useSession();
 
   const { data: tasks, isLoading: isLoadingTasks, error: tasksError } = useQuery<Task[]>({
-    queryKey: ['tasks', currentUserPersonnel?.id, currentUserPersonnel?.role],
-    queryFn: () => fetchTasks(currentUserPersonnel!.id, currentUserPersonnel!.role),
+    queryKey: ['tasks', currentUserPersonnel?.id], // Role is no longer needed
+    queryFn: fetchTasks, // No longer needs arguments
     enabled: !!currentUserPersonnel,
   });
 
