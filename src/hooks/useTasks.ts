@@ -1,12 +1,20 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Task, Personnel } from "@/types";
+import { useSession } from "@/contexts/SessionContext";
 
-const fetchTasks = async (): Promise<Task[]> => {
-  const { data, error } = await supabase
+const fetchTasks = async (userId: string, userRole: string): Promise<Task[]> => {
+  let query = supabase
     .from("tasks")
     .select("*, assigner:personnel!tasks_assigner_id_fkey(*), assignee:personnel!tasks_assignee_id_fkey(*), feedback(*)")
     .order('created_at', { ascending: false });
+
+  // If user is not a manager or BOD, filter by assignee_id
+  if (userRole === 'Nhân viên' || userRole === 'Thực tập') {
+    query = query.eq('assignee_id', userId);
+  }
+
+  const { data, error } = await query;
   if (error) throw new Error(error.message);
   
   const tasksWithFeedback = data.map(task => ({
@@ -24,10 +32,12 @@ const fetchPersonnel = async (): Promise<Personnel[]> => {
 
 export const useTasks = () => {
   const queryClient = useQueryClient();
+  const { personnel: currentUserPersonnel } = useSession();
 
   const { data: tasks, isLoading: isLoadingTasks, error: tasksError } = useQuery<Task[]>({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
+    queryKey: ['tasks', currentUserPersonnel?.id, currentUserPersonnel?.role],
+    queryFn: () => fetchTasks(currentUserPersonnel!.id, currentUserPersonnel!.role),
+    enabled: !!currentUserPersonnel,
   });
 
   const { data: personnel, isLoading: isLoadingPersonnel, error: personnelError } = useQuery<Personnel[]>({
